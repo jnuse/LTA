@@ -133,8 +133,8 @@ if __name__ == '__main__':
     # custom cli options to modify configuration from default values given in json file.
     CustomArgs = collections.namedtuple('CustomArgs', 'flags type target')
     options = [
-        CustomArgs(['-st1', '--step1'], type=bool, target='step 1'),
-        CustomArgs(['-st2', '--step2'], type=bool, target='step 2')
+        CustomArgs(['-st1', '--step1'], type=bool, target='step1'),
+        CustomArgs(['-st2', '--step2'], type=bool, target='step2')
     ]
 
     config = ConfigParser.from_args(args, options)
