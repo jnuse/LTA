@@ -134,7 +134,8 @@ if __name__ == '__main__':
     CustomArgs = collections.namedtuple('CustomArgs', 'flags type target')
     options = [
         CustomArgs(['-st1', '--step1'], type=bool, target='step1'),
-        CustomArgs(['-st2', '--step2'], type=bool, target='step2')
+        CustomArgs(['-st2', '--step2'], type=bool, target='step2'),
+        CustomArgs(['--run_id'], type=str, target='run_id')
     ]
 
     config = ConfigParser.from_args(args, options)

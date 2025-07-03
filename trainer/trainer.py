@@ -6,6 +6,7 @@ from base import BaseTrainer
 from utils import MetricTracker, get_samples, log_dict
 from model.loss import *
 from model.metric import *
+import os
 import pickle
 from numpy import inf
 
@@ -200,6 +201,7 @@ class StepTwoTrainer(BaseTrainer):
                  tensorboard, histogram, monitor='off', early_stop=inf, lr_scheduler=None):
         super().__init__(model, optimizer, config, dataset, epochs, save_per_epochs, verbosity, tensorboard, histogram,
                          monitor, early_stop)
+        self.config = config # Save config
         self.loss_fn = loss_fn
         self.data_sampler = data_sampler
         self.len_epoch = len(self.data_sampler)

@@ -32,7 +32,7 @@ class ConfigParser:
 
             if run_id is None: # use timestamp as default run-id
                 run_id = datetime.now().strftime(r'%m%d_%H%M%S')
-                self.run_id = run_id
+            self.run_id = run_id
             print('expr: {}_{}'.format(exper_name, run_id))
             print('pid: {}'.format(os.getpid()))
 
@@ -93,8 +93,12 @@ class ConfigParser:
             config.update(read_json(args.config))
 
         # parse custom cli options into dictionary
-        modification = {opt.target : getattr(args, _get_opt_name(opt.flags)) for opt in options}
-        return cls(config, resume, args.debug, modification)
+        modification = {opt.target : getattr(args, _get_opt_name(opt.flags)) for opt in options if hasattr(args, _get_opt_name(opt.flags))}
+        
+        # get run_id from args
+        run_id = modification.pop('run_id', None)
+
+        return cls(config, resume, args.debug, modification, run_id)
 
     def init_obj(self, name, module, *args, **kwargs):
         """

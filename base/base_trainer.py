@@ -48,7 +48,6 @@ class BaseTrainer:
         # setup visualization writer instance
         # TODO: debug mode
         # if config.debug:
-        tensorboard = False
         self.writer = TensorboardWriter(config.log_dir, self.logger, tensorboard)
 
         if config.resume is not None:
@@ -66,6 +65,7 @@ class BaseTrainer:
     def train(self):
         """Full training logic."""
         not_improved_count = 0
+        all_logs = []
         for epoch in range(self.start_epoch, self.epochs + 1):
             self.logger.info('\n'+'='*20)
             result = self._train_epoch(epoch)
@@ -73,6 +73,7 @@ class BaseTrainer:
             # save logged information into log dict
             log = {'epoch': epoch}
             log.update(result)
+            all_logs.append(log)
 
             # print logged information to the screen
             log_dict(self.logger, log)
@@ -121,6 +122,31 @@ class BaseTrainer:
         self.logger.info('Best performance epoch {} : {:.6f} -- {}'.format(self.best_epoch,
                                                                            self.mnt_best,
                                                                            best_path))
+        
+        # Save results to json
+        if hasattr(self.config, 'run_id') and self.config.run_id is not None:
+            import os
+            import json
+            results_dir = 'results'
+            if not os.path.exists(results_dir):
+                os.makedirs(results_dir)
+
+            # Find the log of the best epoch
+            best_log = {}
+            for log in all_logs:
+                if log['epoch'] == self.best_epoch:
+                    best_log = log
+                    break
+            
+            final_results = {
+                'best_epoch_summary': best_log,
+                'training_curve': all_logs
+            }
+            
+            result_file = os.path.join(results_dir, f"run_{self.config.run_id}.json")
+            with open(result_file, 'w') as f:
+                json.dump(final_results, f, indent=4)
+            self.logger.info(f"Saved complete results for run {self.config.run_id} to {result_file}")
 
         return self.best_res
 
